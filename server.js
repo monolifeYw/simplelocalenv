@@ -1,17 +1,23 @@
+'use strict';
+
 /**
- * 
+ * set simple node server
  */
 
+// set module path
+require('app-module-path').addPath(process.cwd());
+
 const http = require('http');
-const path = require('path');
+const { resolve } = require('path');
 const express = require('express');
 const app = express();
+const { SERVER, PATHS } = require('app/app-config');
 
 // create server
 const server = http.createServer(app);
 
 // static folder
-app.use(express.static(path.resolve(__dirname, 'assets')));
+app.use(express.static(PATHS.ASSETS_DIR));
 
 // parsing from data from express
 const bodyParser = require('body-parser');
@@ -21,15 +27,20 @@ const expressHandlebars = require('express-handlebars');
 const hbs = expressHandlebars.create({
   // extension
   extname: 'hbs',
-  partialsDir: ['src/tmpls/partials'],
+  partialsDir: [PATHS.PARTIAL_DIR],
 });
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 // set views folder
-app.set('views', path.resolve(__dirname, 'src', 'tmpls'));
+app.set('views', PATHS.VIEW_DIR);
 
 // url encode
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// build mode
+if (SERVER.BUILD_MODE) {
+  app.use(require('./webpackMiddleware')());
+}
 
 // router
 app.get('/', (req, res) => {
@@ -37,11 +48,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/custom/:customTmpl', (req, res) => {
-  res.render('custom/' + req.params.customTmpl);
+  res.render(resolve(PATHS.CUSTOM_DIR, req.params.customTmpl));
 });
 
 // listener
-server.listen(3000);
+server.listen(SERVER.PORT);
 server.on('listening', () => {
   console.log(__dirname);
   console.log('onListening : ', server.address());
