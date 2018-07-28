@@ -1,0 +1,17 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# local history
+.history/
+
+# package
+package-lock.json
+
+# Dependency
+node_modules/
+
+# Build
+dist/
+build/

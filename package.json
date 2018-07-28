@@ -1,0 +1,17 @@
+{
+  "name": "localenv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "body-parser": "1.18.2",
+    "express": "4.15.2",
+    "express-handlebars": "3.0.0",
+    "nodemon": "^1.18.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
