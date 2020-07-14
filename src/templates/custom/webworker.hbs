@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Worker example</title>
+ </head>
+ <body>
+  <input type="number" id="limit" value="50">
+  <button onclick="executeWorker()">Execute worker</button>
+  <button onclick="normal()">Not worker</button>
+  <button onclick="clearResults()">Clear worker</button>
+  <div id="results">
+  </div>
+  <script>
+   var startTime = 0;
+   var duringTime = 0;
+
+   var worker = new Worker('/js/webworker/webworker.js');
+   worker.onmessage = function (event) {
+     console.log('worker event', event);
+     var resultsDiv = document.getElementById('results');
+
+     for (var resultIdx = 0; resultIdx < event.data.length; resultIdx++) {
+       var result = event.data[resultIdx];
+       var node = document.createElement('p');
+       var textNode = document.createTextNode('Factorial of ' + result.number + ' is ' + result.result);
+       node.appendChild(textNode);
+       resultsDiv.appendChild(node);
+     }
+
+     timeCheck();
+   }
+
+   function timeCheck() {
+     duringTime = new Date().getTime() - startTime;
+     console.log('duringTime', duringTime)
+   }
+
+   function clearResults() {
+     var resultsDiv = document.getElementById('results');
+     while (resultsDiv.firstChild) {
+       resultsDiv.removeChild(resultsDiv.firstChild);
+     }
+   }
+
+   function executeWorker() {
+     clearResults();
+     startTime = new Date().getTime();
+     var limit = document.getElementById('limit').value;
+     worker.postMessage({ limit: limit });
+   }
+
+  // =================================================================================================
+   function normal() {
+     clearResults();
+     startTime = new Date().getTime();
+     var limit = document.getElementById('limit').value;
+     var results = [];
+     for (var num = 1; num <= limit; num++) {
+       results.push({ number: num, result: factorial(num) });
+     }
+
+     normalReponse(results);
+   }
+
+   function normalReponse(data) {
+     var resultsDiv = document.getElementById('results');
+
+     for (var resultIdx = 0; resultIdx < data.length; resultIdx++) {
+       var result = data[resultIdx];
+       var node = document.createElement('p');
+       var textNode = document.createTextNode('Factorial of ' + result.number + ' is ' + result.result);
+       node.appendChild(textNode);
+       resultsDiv.appendChild(node);
+     }
+     timeCheck();
+   }
+
+   function factorial(number) {
+    function recFact(number, result) {
+      if (number === 1 || number === 0) {
+        return result;
+      } else {
+        return recFact(number - 1, number * result);
+      }
+    }
+
+    return recFact(number, 1);
+  }
+  </script>
+ </body>
+</html>
