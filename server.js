@@ -47,7 +47,8 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/custom/:customTmpl', (req, res) => {
+app.get('/custom/:customDir/**/:customTmpl', (req, res) => {
+  console.log(req.params);
   res.render(resolve(PATHS.CUSTOM_DIR, req.params.customTmpl));
 });
 
